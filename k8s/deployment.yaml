@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+  labels:
+    app: my-app
+spec:
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: myapp
+        image: rohitkhatri10/cicd-learning-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8090
