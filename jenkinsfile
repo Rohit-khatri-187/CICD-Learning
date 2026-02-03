@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_USER = 'rohitkhatri10'
+        IMAGE_NAME = 'cicd-learning-app'
+        DOCKER_HUB_CREDS = credentials('docker-hub-credentials')
+    }
+
+    tools {
+        maven 'jenkins-maven'
+
+    }
+
+    stages {
+        stage('Build Maven') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Rohit-khatri-187/CICD-Learning.git']])
+                sh 'mvn clean install'
+            }
+        }
+        stage('Build Docker Image'){
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('push Image to docker hub') {
+            steps {
+                script {
+                    sh 'docker login -u $DOCKER_HUB_CREDS_USR -p $DOCKER_HUB_CREDS_PSW'
+
+                    sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
+
+                    sh 'docker logout'
+                }
+            }
+        }
+
+
+    }
+}
